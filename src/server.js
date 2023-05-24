@@ -7,7 +7,9 @@ const PORT = 3000;
 
 app.listen(PORT, async () => {
   console.log("Connecting to database");
-  await mongoose.connect(config.MONGODB_URI);
+  await mongoose.connect(config.MONGODB_URI, {
+    dbName: `wallet`,
+  });
 });
 
 db.on("error", (error) => {

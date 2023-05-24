@@ -10,8 +10,11 @@ const userSchema = new Schema({
     required: [true, "Email is required"],
     unique: true,
   },
+  balance: {
+    type: Number,
+    default: 0,
+  },
 
-  avatarURL: String,
   token: {
     type: String,
     default: null,

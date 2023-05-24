@@ -29,12 +29,8 @@ export const saveToken = (id, token) => {
   return User.findOneAndUpdate({ _id: id }, { token: token });
 };
 
-export const saveAvatarURL = (id, avatarURL) => {
-  return User.findOneAndUpdate({ _id: id }, { avatarURL: avatarURL });
-};
-
-export const register = (email, password, avatarURL, verificationToken) => {
-  const newUser = new User({ email, password, avatarURL, verificationToken });
+export const register = (email, password, verificationToken) => {
+  const newUser = new User({ email, password, verificationToken });
   newUser.setPassword(password);
   return newUser.save();
 };

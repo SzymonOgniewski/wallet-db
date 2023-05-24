@@ -1,7 +1,6 @@
 import * as userService from "./service.js";
 import { nanoid } from "nanoid";
 
-import gravatar from "gravatar";
 import jwt from "jsonwebtoken";
 import Joi from "joi";
 import dotenv from "dotenv";
@@ -85,19 +84,16 @@ export const signup = async (req, res, next) => {
         data: "Conflict",
       });
     }
-    const avatarURL = gravatar.url(email);
+
     const verificationToken = nanoid();
+
     const newUser = await userService.register(
       email,
       password,
-      avatarURL,
       verificationToken
     );
-    const {
-      email: emailRegistered,
-      subscription: subscriptionRegistered,
-      avatarURL: avatarURLRegistered,
-    } = newUser;
+
+    const { email: emailRegistered } = newUser;
     const msg = {
       to: emailRegistered,
       from: "contactsapp@op.pl",
@@ -125,8 +121,6 @@ export const signup = async (req, res, next) => {
       data: {
         user: {
           email: emailRegistered,
-          subscription: subscriptionRegistered,
-          avatarURL: avatarURLRegistered,
         },
       },
     });
@@ -156,7 +150,7 @@ export const current = async (req, res, next) => {
     data: {
       user: {
         email: req.user.email,
-        subscription: req.user.subscription,
+        balance: req.user.balance,
       },
     },
   });
