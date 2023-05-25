@@ -1,9 +1,11 @@
 import passport from "passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { User } from "../modules/user/model.js";
+
 import dotenv from "dotenv";
 dotenv.config();
 const secret = process.env.SECRET;
+
 const strategyOptions = {
   secretOrKey: secret,
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,10 +20,11 @@ passport.use(
       .catch(done);
   })
 );
+
 export const auth = async (req, res, next) => {
   passport.authenticate("jwt", { session: false }, async (err, user) => {
     const reqToken = req.headers["authorization"]?.slice(7);
-    if (!user || err || user.token !== reqToken || user.verify === false) {
+    if (!user || err || user.token !== reqToken ) {
       return res.status(401).json({
         status: "error",
         code: 401,
@@ -29,6 +32,7 @@ export const auth = async (req, res, next) => {
         data: "Unauthorized",
       });
     }
+    req.user = user;
     next();
   })(req, res, next);
 };

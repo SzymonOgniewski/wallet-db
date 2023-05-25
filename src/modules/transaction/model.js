@@ -16,7 +16,7 @@ export const Transaction = model(
       enum: ["INCOME", "EXPENSE"],
       required: true,
     },
-    amount: { type: Number, required: true },
+    amount: { type: Number, required: true, function(){return this.amount.toFixed(2)} },
     comment: { type: String },
     userId: { type: String, required: true },
     balanceAfter: { type: Number },

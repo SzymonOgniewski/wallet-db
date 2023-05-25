@@ -1,23 +1,38 @@
 import * as TransactionService from "./service.js";
-
-const testUser = { userId: "testuser", balance: 3200 };
+import Joi from "joi";
 
 export const createNewTransaction = async (req, res) => {
-  // user.balance będzie aktualizowany tutaj za pomocą save()
   try {
-    const { name, amount, type } = req.body;
-    if (!name || !amount || !type)
+    const user = req.user;
+    const { name, amount, type, category, comment } = req.body;
+    // const transactionSchema = Joi.object({
+    //   name: Joi.string().required().min(3).max(40),
+    //   amount: Joi.number().required().min(1).max(15),
+
+    // });
+    // const { error } = schema.validate({
+    //   name: name,
+    //   amount: amount,
+    // });
+    let balanceAfter = user.balance;
+    const amountParsed = JSON.parse(amount);
+    if (!name || !amount || !type || !category)
       return res
         .status(400)
         .json({ message: "Fields: name, amount, type are required." });
-    const balanceAfter = testUser.balance - amount;
-    testUser.balance = balanceAfter;
+    type === "INCOME"
+      ? (balanceAfter += amountParsed)
+      : (balanceAfter -= amountParsed);
+    user.balance = balanceAfter.toFixed(2);
+    await user.save();
     const newTransaction = await TransactionService.createNew(
       name,
-      amount,
+      amountParsed.toFixed(2),
       type,
-      testUser.userId,
-      balanceAfter
+      user.id,
+      balanceAfter.toFixed(2),
+      category,
+      comment
     );
     return res.status(201).json(newTransaction);
   } catch (error) {
@@ -27,8 +42,7 @@ export const createNewTransaction = async (req, res) => {
 
 export const userTransactions = async (req, res) => {
   try {
-    //const userId = req.user.id
-    const userId = testUser.userId;
+    const userId = req.user.id;
     const userTransactions = await TransactionService.getUserTransactions(
       userId
     );
