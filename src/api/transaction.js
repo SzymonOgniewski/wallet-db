@@ -6,5 +6,6 @@ const api = express.Router();
 
 api.post("/", auth, transactionController.createNewTransaction);
 api.get("/", auth, transactionController.userTransactions);
+api.patch("/:transactionId", auth, transactionController.updateTransaction);
 
 export default api;
