@@ -1,4 +1,3 @@
-import { Transaction } from "./model.js";
 import * as TransactionService from "./service.js";
 
 const testUser = { userId: "testuser", balance: 3200 };
