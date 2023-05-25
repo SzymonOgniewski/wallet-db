@@ -5,6 +5,10 @@ export const createNewTransaction = async (req, res) => {
   try {
     const user = req.user;
     const { name, amount, type, category, comment } = req.body;
+    if (!name || !amount || !type || !category)
+      return res
+        .status(400)
+        .json({ message: "Fields: name, amount, type are required." });
     // const transactionSchema = Joi.object({
     //   name: Joi.string().required().min(3).max(40),
     //   amount: Joi.number().required().min(1).max(15),
@@ -15,14 +19,12 @@ export const createNewTransaction = async (req, res) => {
     //   amount: amount,
     // });
     let balanceAfter = user.balance;
-    const amountParsed = JSON.parse(amount);
-    if (!name || !amount || !type || !category)
-      return res
-        .status(400)
-        .json({ message: "Fields: name, amount, type are required." });
+    let amountParsed = parseFloat(amount);
+    amountParsed = amountParsed;
     type === "INCOME"
       ? (balanceAfter += amountParsed)
       : (balanceAfter -= amountParsed);
+    console.log(typeof amountParsed, typeof user.balance, typeof balanceAfter);
     user.balance = balanceAfter.toFixed(2);
     await user.save();
     const newTransaction = await TransactionService.createNew(
