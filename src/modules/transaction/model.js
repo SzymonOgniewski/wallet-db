@@ -14,7 +14,6 @@ export const Transaction = model(
     type: {
       type: String,
       enum: ["INCOME", "EXPENSE"],
-      required: true,
     },
     amount: {
       type: Number,
@@ -25,5 +24,13 @@ export const Transaction = model(
     balanceAfter: {
       type: Number,
     },
+  })
+);
+
+export const Category = model(
+  "categorie",
+  new Schema({
+    name: { type: String },
+    type: { type: String, enum: ["INCOME", "EXPENSE"] },
   })
 );

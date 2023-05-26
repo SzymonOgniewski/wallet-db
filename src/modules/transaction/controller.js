@@ -1,12 +1,12 @@
-import { Transaction } from "./model.js";
+import { Category, Transaction } from "./model.js";
 import * as TransactionService from "./service.js";
 import Joi from "joi";
 
 export const createNewTransaction = async (req, res) => {
   try {
     const user = req.user;
-    const { name, amount, type, category } = req.body;
-    if (!name || !amount || !type || !category)
+    const { name, amount, categoryId } = req.body;
+    if (!name || !amount || !categoryId)
       return res
         .status(400)
         .json({ message: "Fields: name, amount, type are required." });
@@ -17,16 +17,19 @@ export const createNewTransaction = async (req, res) => {
         .min(0.01)
         .max(99999999999999)
         .precision(2),
-      type: Joi.string().valid("INCOME", "EXPENSE").required(),
+      categoryId: Joi.string().required(),
     });
     const { error } = transactionSchema.validate({
       name,
       amount,
-      type,
+      categoryId,
     });
     if (error) {
       return res.status(400).json({ error: error.message });
     }
+    const category = await Category.findOne({ _id: categoryId });
+    const categoryName = category.name;
+    const type = category.type;
     let balanceAfter = user.balance;
     let amountParsed = parseFloat(amount);
     type === "INCOME"
@@ -40,7 +43,7 @@ export const createNewTransaction = async (req, res) => {
       type,
       user.id,
       balanceAfter.toFixed(2),
-      category
+      categoryName
     );
     return res.status(201).json(newTransaction);
   } catch (error) {
@@ -64,24 +67,31 @@ export const updateTransaction = async (req, res) => {
   try {
     const user = req.user;
     const transactionId = req.params.transactionId;
-    const updatedTransactionFields = req.body;
     const currentTransactionData = await Transaction.findOneAndUpdate({
       _id: transactionId,
     });
     const prevAmount = currentTransactionData.amount;
     const prevType = currentTransactionData.type;
     let balance = parseFloat(user.balance);
-    const { name, amount, type, category } = updatedTransactionFields;
+    const { name, amount, categoryId } = req.body;
+    const categoryData = await Category.findOne({ _id: categoryId });
+    if (!categoryData)
+      return res
+        .status(404)
+        .json({ message: "there is no category with such id" });
+    console.log(categoryId);
+    const category = categoryData.name;
+    const type = categoryData.type;
     const amountParsed = parseFloat(amount);
     const updatedTransactionSchema = Joi.object({
       name: Joi.string().min(3).max(40),
       amount: Joi.number().min(0.01).max(99999999999999).precision(2),
-      type: Joi.string().valid("INCOME", "EXPENSE"),
+      categoryId: Joi.string(),
     });
     const { error } = updatedTransactionSchema.validate({
       name,
       amount: amountParsed,
-      type,
+      categoryId,
     });
     if (error) {
       return res.status(400).json({ error: error.message });
@@ -107,10 +117,43 @@ export const updateTransaction = async (req, res) => {
     }
     const updatedTransaction = await TransactionService.updateTransaction(
       transactionId,
-      updatedTransactionFields
+      { name, amount, category, type }
     );
     return res.status(200).json(updatedTransaction);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const deleteTransaction = async (req, res) => {
+  try {
+    const transactionId = req.params.transactionId;
+    const removedTransaction = await TransactionService.deleteTransaction(
+      transactionId
+    );
+    if (!removedTransaction) return res.sendStatus(404);
+    return res.json(removedTransaction);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getCategories = async (req, res) => {
+  try {
+    const categories = await TransactionService.getTransactionCategories();
+    console.log(categories);
+    return res.status(200).json({ categories });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// export const createCategory = async (req, res) => {
+//   try {
+//     const { name, type } = req.body;
+//     const newCategory = await TransactionService.createCategory(name, type);
+//     return res.status(201).json(newCategory);
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
