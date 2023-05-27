@@ -2,6 +2,7 @@ import passport from "passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { User } from "../modules/user/model.js";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 dotenv.config();
 const secret = process.env.SECRET;
 const strategyOptions = {
@@ -29,6 +30,7 @@ export const auth = async (req, res, next) => {
         data: "Unauthorized",
       });
     }
+    req.user = user;
     next();
   })(req, res, next);
 };

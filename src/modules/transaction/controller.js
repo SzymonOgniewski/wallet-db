@@ -3,7 +3,7 @@ import * as TransactionService from "./service.js";
 const testUser = { userId: "testuser", balance: 3200 };
 
 export const createNewTransaction = async (req, res) => {
-  // user.balance będzie aktualizowany tutaj za pomocą save()
+  const userId = req.user._id;
   try {
     const { name, amount, type } = req.body;
     if (!name || !amount || !type)
@@ -16,7 +16,7 @@ export const createNewTransaction = async (req, res) => {
       name,
       amount,
       type,
-      testUser.userId,
+      userId,
       balanceAfter
     );
     return res.status(201).json(newTransaction);
@@ -27,8 +27,8 @@ export const createNewTransaction = async (req, res) => {
 
 export const userTransactions = async (req, res) => {
   try {
-    //const userId = req.user.id
-    const userId = testUser.userId;
+    const userId = req.user._id;
+    // const userId = testUser.userId;
     const userTransactions = await TransactionService.getUserTransactions(
       userId
     );

@@ -4,7 +4,7 @@ import cors from "cors";
 import path from "node:path";
 import transactionRouter from "./api/transaction.js";
 import { usersRouter } from "./api/user.js";
-
+import { transactionsSummaryRouter } from "./api/transactionSummary.js";
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
@@ -16,6 +16,7 @@ app.use(express.static(path.join(process.cwd(), "src", "public")));
 
 app.use("/api/transactions", transactionRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/transactions-summary", transactionsSummaryRouter);
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
 });
