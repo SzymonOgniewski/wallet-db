@@ -3,9 +3,8 @@ import { Schema, model } from "mongoose";
 export const Transaction = model(
   "Transaction",
   new Schema({
-    name: {
+    comment: {
       type: String,
-      required: [true, "set name of transaction"],
     },
     transactionDate: {
       type: String,
@@ -14,12 +13,13 @@ export const Transaction = model(
     type: {
       type: String,
       enum: ["INCOME", "EXPENSE"],
+      defaykt: "EXPENSE",
     },
     amount: {
       type: Number,
       required: true,
     },
-    category: { type: String },
+    category: { type: String, default: "default transaction" },
     userId: { type: String, required: true },
     balanceAfter: {
       type: Number,

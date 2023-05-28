@@ -1,22 +1,22 @@
 import { Category, Transaction } from "./model.js";
 
 export const createNew = (
-  name,
+  comment,
   amount,
   type,
   userId,
   balanceAfter,
   category,
-  comment
+  date
 ) =>
   Transaction.create({
-    name,
+    comment,
     amount,
     type,
     userId,
     balanceAfter,
     category,
-    comment,
+    date,
   });
 
 export const getUserTransactions = (userId) => Transaction.find({ userId });

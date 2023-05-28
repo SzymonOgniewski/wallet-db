@@ -5,40 +5,43 @@ import Joi from "joi";
 export const createNewTransaction = async (req, res) => {
   try {
     const user = req.user;
-    const { name, amount, categoryId } = req.body;
-    if (!name || !amount || !categoryId)
+    const { comment, amount, categoryId } = req.body;
+    if (!amount)
       return res
         .status(400)
         .json({ message: "Fields: name, amount, type are required." });
     const transactionSchema = Joi.object({
-      name: Joi.string().required().min(3).max(40),
+      comment: Joi.string().max(40),
       amount: Joi.number()
         .required()
         .min(0.01)
         .max(99999999999999)
         .precision(2),
-      categoryId: Joi.string().required(),
+      categoryId: Joi.string(),
     });
     const { error } = transactionSchema.validate({
-      name,
+      comment,
       amount,
       categoryId,
     });
     if (error) {
       return res.status(400).json({ error: error.message });
     }
+    let categoryName = "default category";
+    let type = "EXPENSE";
     const category = await Category.findOne({ _id: categoryId });
-    const categoryName = category.name;
-    const type = category.type;
-    let balanceAfter = user.balance;
+    if (category) (categoryName = category.name), (type = category.type);
+    let userBalance = user.balance;
+    let balanceAfter;
     let amountParsed = parseFloat(amount);
     type === "INCOME"
-      ? (balanceAfter += amountParsed)
-      : (balanceAfter -= amountParsed);
-    user.balance = balanceAfter.toFixed(2);
+      ? (userBalance += amountParsed)
+      : (userBalance -= amountParsed);
+    user.balance = userBalance.toFixed(2);
+    balanceAfter = userBalance;
     await user.save();
     const newTransaction = await TransactionService.createNew(
-      name,
+      comment,
       amountParsed.toFixed(2),
       type,
       user.id,
@@ -67,29 +70,27 @@ export const updateTransaction = async (req, res) => {
   try {
     const user = req.user;
     const transactionId = req.params.transactionId;
-    const currentTransactionData = await Transaction.findOneAndUpdate({
+    const currentTransactionData = await Transaction.findOne({
       _id: transactionId,
     });
+
     const prevAmount = currentTransactionData.amount;
     const prevType = currentTransactionData.type;
     let balance = parseFloat(user.balance);
-    const { name, amount, categoryId } = req.body;
+    const { comment, amount, categoryId, date } = req.body;
     const categoryData = await Category.findOne({ _id: categoryId });
     if (!categoryData)
-      return res
-        .status(404)
-        .json({ message: "there is no category with such id" });
-    console.log(categoryId);
+      return res.status(404).json({ message: "invalid category id" });
     const category = categoryData.name;
     const type = categoryData.type;
     const amountParsed = parseFloat(amount);
     const updatedTransactionSchema = Joi.object({
-      name: Joi.string().min(3).max(40),
+      comment: Joi.string().max(40),
       amount: Joi.number().min(0.01).max(99999999999999).precision(2),
       categoryId: Joi.string(),
     });
     const { error } = updatedTransactionSchema.validate({
-      name,
+      comment,
       amount: amountParsed,
       categoryId,
     });
@@ -97,10 +98,7 @@ export const updateTransaction = async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
     if (amountParsed !== currentTransactionData.amount || prevType !== type) {
-      let prevBalanceAfter = currentTransactionData.balanceAfter;
-      prevType === "INCOME"
-        ? (balance = prevBalanceAfter - prevAmount)
-        : (balance = prevBalanceAfter + prevAmount);
+      prevType === "INCOME" ? (balance -= prevAmount) : (balance += prevAmount);
       if (!type) {
         prevType === "INCOME"
           ? (balance += amountParsed)
@@ -117,10 +115,16 @@ export const updateTransaction = async (req, res) => {
     }
     const updatedTransaction = await TransactionService.updateTransaction(
       transactionId,
-      { name, amount, category, type }
+      { comment, amount, category, type, date }
     );
     return res.status(200).json(updatedTransaction);
   } catch (error) {
+    const { categoryId } = req.body;
+    if (
+      error.message ===
+      `Cast to ObjectId failed for value \"${categoryId}\" (type string) at path \"_id\" for model \"categorie\"`
+    )
+      return res.status(404).json({ message: "invalid categoryId" });
     return res.status(500).json({ message: error.message });
   }
 };
