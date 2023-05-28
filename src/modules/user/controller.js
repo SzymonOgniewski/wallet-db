@@ -1,10 +1,10 @@
 import * as userService from "./service.js";
 import { nanoid } from "nanoid";
-
 import jwt from "jsonwebtoken";
 import Joi from "joi";
-import dotenv from "dotenv";
 import sgMail from "@sendgrid/mail";
+
+import dotenv from "dotenv";
 dotenv.config();
 
 sgMail.setApiKey(process.env.SEND_GRID_PASSWORD);
@@ -22,7 +22,6 @@ export const login = async (req, res, next) => {
     email: email,
     password: password,
   });
-
   if (error) return res.status(400).json(error.details[0].message);
   try {
     const user = await userService.findUserByEmail(email);
@@ -34,12 +33,18 @@ export const login = async (req, res, next) => {
         data: "Bad request",
       });
     }
-
+    if (user.verify === false) {
+      return res.status(400).json({
+        status: "error",
+        code: 400,
+        message: "Email need verification, please check your email",
+        data: "Bad request",
+      });
+    }
     const payload = {
       id: user.id,
       useremail: user.email,
     };
-
     const token = jwt.sign(payload, secret, { expiresIn: "1h" });
     await userService.saveToken(user.id, token);
     res.json({
@@ -70,9 +75,7 @@ export const signup = async (req, res, next) => {
     email: email,
     password: password,
   });
-
   if (error) return res.status(400).json(error.details[0].message);
-
   try {
     const user = await userService.findUserByEmail(email);
     if (user) {
@@ -83,19 +86,17 @@ export const signup = async (req, res, next) => {
         data: "Conflict",
       });
     }
-
     const verificationToken = nanoid();
-
     const newUser = await userService.register(
       email,
       password,
       verificationToken
     );
-
     const { email: emailRegistered } = newUser;
     const msg = {
       to: emailRegistered,
-      from: "contactsapp@op.pl",
+      // from: "contactsapp@op.pl",
+      from: "szymonogniewski00@gmail.com",
       subject: "Please Verify Your Account",
       html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="http://localhost:3000/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
@@ -127,12 +128,11 @@ export const signup = async (req, res, next) => {
     next(error);
   }
 };
+
 export const logout = async (req, res, next) => {
   const id = req.user;
-
   try {
     await userService.saveToken(id, null);
-
     res.json({
       status: "success",
       code: 204,
@@ -142,7 +142,9 @@ export const logout = async (req, res, next) => {
     next(e);
   }
 };
+
 export const current = async (req, res, next) => {
+  console.log(req.user);
   return res.json({
     status: "success",
     code: 200,
@@ -154,18 +156,16 @@ export const current = async (req, res, next) => {
     },
   });
 };
+
 export const verificationToken = async (req, res, next) => {
   const verificationToken = req.params.verificationToken;
-  console.log(verificationToken);
   const schema = Joi.object({
     verificationToken: Joi.string().required(),
   });
   const { error } = schema.validate({
     verificationToken: verificationToken,
   });
-
   if (error) return res.status(400).json(error.details[0].message);
-
   try {
     const user = await userService.findUserByverificationTokenAndVerify(
       verificationToken
@@ -191,18 +191,16 @@ export const verificationToken = async (req, res, next) => {
     next(e);
   }
 };
+
 export const verifiy = async (req, res, next) => {
   const { email } = req.body;
-
   const schema = Joi.object({
     email: Joi.string().email().required(),
   });
   const { error } = schema.validate({
     email: email,
   });
-
   if (error) return res.status(400).json(error.details[0].message);
-
   try {
     const user = await userService.findUserByEmail(email);
     if (!user) {
@@ -213,7 +211,6 @@ export const verifiy = async (req, res, next) => {
         data: "Conflict",
       });
     }
-
     if (user.verify) {
       return res.status(400).json({
         status: "error",
@@ -222,10 +219,8 @@ export const verifiy = async (req, res, next) => {
         data: "Conflict",
       });
     }
-
     const verificationToken = nanoid();
     await userService.findUserByEmailAndRenevToken(email, verificationToken);
-
     const msg = {
       to: email,
       from: "contactsapp@op.pl",

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import app from "./app.js";
 import { config } from "./config.js";
-console.log(config.MONGODB_URI);
+
 const db = mongoose.connection;
 const PORT = 3000;
 

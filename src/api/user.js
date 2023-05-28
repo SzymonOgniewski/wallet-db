@@ -3,6 +3,7 @@ import { auth } from "../middlewares/auth.js";
 import * as userController from "../modules/user/controller.js";
 export const usersRouter = Router();
 
+
 usersRouter.post("/sing-up", userController.signup);
 usersRouter.post("/sign-in", userController.login);
 usersRouter.get("/sign-out", auth, userController.logout);

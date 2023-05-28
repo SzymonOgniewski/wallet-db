@@ -17,6 +17,7 @@ app.use(express.static(path.join(process.cwd(), "src", "public")));
 app.use("/api/transactions", transactionRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/transactions-summary", transactionsSummaryRouter);
+
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
 });
