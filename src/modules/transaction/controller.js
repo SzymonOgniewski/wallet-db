@@ -3,6 +3,7 @@ import * as TransactionService from "./service.js";
 import Joi from "joi";
 
 export const createNewTransaction = async (req, res) => {
+  const userId = req.user._id;
   try {
     const user = req.user;
     const { comment, amount, categoryId } = req.body;
@@ -44,7 +45,9 @@ export const createNewTransaction = async (req, res) => {
       comment,
       amountParsed.toFixed(2),
       type,
-      user.id,
+
+      userId,
+      balanceAfter
       balanceAfter.toFixed(2),
       categoryName
     );
@@ -56,7 +59,9 @@ export const createNewTransaction = async (req, res) => {
 
 export const userTransactions = async (req, res) => {
   try {
-    const userId = req.user.id;
+
+    const userId = req.user._id;
+    // const userId = testUser.userId;
     const userTransactions = await TransactionService.getUserTransactions(
       userId
     );
