@@ -1,5 +1,4 @@
 import express from "express";
-
 import * as transactionController from "../modules/transaction/controller.js";
 import { auth } from "../middlewares/auth.js";
 
@@ -12,6 +11,5 @@ api.delete("/:transactionId", auth, transactionController.deleteTransaction);
 
 api.get("/categories", auth, transactionController.getCategories);
 // api.post("/categories", auth, transactionController.createCategory);
-
 
 export default api;

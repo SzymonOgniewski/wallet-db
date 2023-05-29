@@ -5,9 +5,37 @@ import path from "node:path";
 import transactionRouter from "./api/transaction.js";
 import { usersRouter } from "./api/user.js";
 import { transactionsSummaryRouter } from "./api/transactionSummary.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+
 const app = express();
 
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Wallet API Docs",
+      version: "0.1.0",
+      description: "This is wallet API Docs",
+
+      contact: {
+        name: "Szymon",
+        email: "szymonogniewski00@email.com",
+      },
+    },
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+  },
+  apis: ["./swagger/*.js"],
+};
+const specs = swaggerJsdoc(options);
+
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
+
+app.use("/", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(logger(formatsLogger));
 app.use(cors());
