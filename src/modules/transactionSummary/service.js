@@ -1,22 +1,24 @@
-//import { TransactionSummary } from "./model.js";
 import { Transaction } from "../transaction/model.js";
+import { ObjectId } from "mongoose";
 export const monthlySummaryForUser = (userId, year, month) => {
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59);
   return Transaction.aggregate([
     {
       $match: {
-        transactionDate: { $regex: `^${year}-${month}` }, // Dopasowanie do miesiąca i roku
-        userId: userId, // Dopasowanie do konkretnego użytkownika
+        transactionDate: { $gte: startDate, $lte: endDate },
+        userId: userId.toString(),
       },
     },
     {
       $group: {
-        _id: "$categoryId", // Grupowanie po kategorii
-        total: { $sum: "$amount" }, // Sumowanie kwoty
+        _id: { $toObjectId: "$categoryId" },
+        total: { $sum: "$amount" },
       },
     },
     {
       $lookup: {
-        from: "categories", // Nazwa kolekcji zawierającej informacje o kategoriach
+        from: "categories",
         localField: "_id",
         foreignField: "_id",
         as: "categoryInfo",

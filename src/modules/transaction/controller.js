@@ -44,9 +44,9 @@ export const createNewTransaction = async (req, res) => {
       comment,
       amountParsed.toFixed(2),
       type,
-      user.id,
       balanceAfter.toFixed(2),
-      categoryName,
+      categoryId
+      user.id,
       date
     );
     return res.status(201).json(newTransaction);

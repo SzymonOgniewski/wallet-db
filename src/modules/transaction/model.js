@@ -7,8 +7,8 @@ export const Transaction = model(
       type: String,
     },
     transactionDate: {
-      type: String,
-      default: Date.now,
+      type: Date,
+      default: new Date(),
     },
     type: {
       type: String,
@@ -19,7 +19,7 @@ export const Transaction = model(
       type: Number,
       required: true,
     },
-    category: { type: String, default: "default transaction" },
+    categoryId: { type: String, default: "6473544cf09b05df28a84d32" },
     userId: { type: String, required: true },
     balanceAfter: {
       type: Number,

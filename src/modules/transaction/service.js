@@ -6,7 +6,7 @@ export const createNew = (
   type,
   userId,
   balanceAfter,
-  category,
+  categoryId,
   date
 ) =>
   Transaction.create({
@@ -15,7 +15,7 @@ export const createNew = (
     type,
     userId,
     balanceAfter,
-    category,
+    categoryId,
     date,
   });
 
