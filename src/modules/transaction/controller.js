@@ -3,14 +3,13 @@ import * as TransactionService from "./service.js";
 import Joi from "joi";
 
 export const createNewTransaction = async (req, res) => {
-  const userId = req.user._id;
   try {
     const user = req.user;
-    const { comment, amount, categoryId } = req.body;
+    const { comment, amount, categoryId, date } = req.body;
     if (!amount)
       return res
         .status(400)
-        .json({ message: "Fields: name, amount, type are required." });
+        .json({ message: "Field amount is required" });
     const transactionSchema = Joi.object({
       comment: Joi.string().max(40),
       amount: Joi.number()
@@ -45,11 +44,10 @@ export const createNewTransaction = async (req, res) => {
       comment,
       amountParsed.toFixed(2),
       type,
-
-      userId,
-      balanceAfter
+      user.id,
       balanceAfter.toFixed(2),
-      categoryName
+      categoryName,
+      date
     );
     return res.status(201).json(newTransaction);
   } catch (error) {
@@ -59,9 +57,7 @@ export const createNewTransaction = async (req, res) => {
 
 export const userTransactions = async (req, res) => {
   try {
-
     const userId = req.user._id;
-    // const userId = testUser.userId;
     const userTransactions = await TransactionService.getUserTransactions(
       userId
     );
@@ -85,7 +81,7 @@ export const updateTransaction = async (req, res) => {
     const { comment, amount, categoryId, date } = req.body;
     const categoryData = await Category.findOne({ _id: categoryId });
     if (!categoryData)
-      return res.status(404).json({ message: "invalid category id" });
+      return res.status(400).json({ message: "invalid category id" });
     const category = categoryData.name;
     const type = categoryData.type;
     const amountParsed = parseFloat(amount);

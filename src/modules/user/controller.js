@@ -192,7 +192,7 @@ export const verificationToken = async (req, res, next) => {
   }
 };
 
-export const verifiy = async (req, res, next) => {
+export const verify = async (req, res, next) => {
   const { email } = req.body;
   const schema = Joi.object({
     email: Joi.string().email().required(),
