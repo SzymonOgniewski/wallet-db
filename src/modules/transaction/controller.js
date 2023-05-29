@@ -47,7 +47,7 @@ export const createNewTransaction = async (req, res) => {
       type,
       userId,
       balanceAfter.toFixed(2),
-      categoryName
+      categoryId
     );
     return res.status(201).json(newTransaction);
   } catch (error) {

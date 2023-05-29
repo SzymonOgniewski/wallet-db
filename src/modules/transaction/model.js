@@ -19,7 +19,6 @@ export const Transaction = model(
       type: Number,
       required: true,
     },
-    category: { type: String, default: "default transaction" },
     categoryId: { type: String, default: "6473544cf09b05df28a84d32" },
     userId: { type: String, required: true },
     balanceAfter: {
