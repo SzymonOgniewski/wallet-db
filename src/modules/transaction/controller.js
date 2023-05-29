@@ -7,9 +7,7 @@ export const createNewTransaction = async (req, res) => {
     const user = req.user;
     const { comment, amount, categoryId, date } = req.body;
     if (!amount)
-      return res
-        .status(400)
-        .json({ message: "Field amount is required" });
+      return res.status(400).json({ message: "Field amount is required" });
     const transactionSchema = Joi.object({
       comment: Joi.string().max(40),
       amount: Joi.number()
@@ -27,10 +25,11 @@ export const createNewTransaction = async (req, res) => {
     if (error) {
       return res.status(400).json({ error: error.message });
     }
-    let categoryName = "default category";
     let type = "EXPENSE";
     const category = await Category.findOne({ _id: categoryId });
-    if (category) (categoryName = category.name), (type = category.type);
+    console.log(categoryId);
+    if (category) type = category.type;
+    console.log(categoryId);
     let userBalance = user.balance;
     let balanceAfter;
     let amountParsed = parseFloat(amount);
@@ -44,13 +43,19 @@ export const createNewTransaction = async (req, res) => {
       comment,
       amountParsed.toFixed(2),
       type,
-      balanceAfter.toFixed(2),
-      categoryId
       user.id,
+      balanceAfter.toFixed(2),
+      categoryId,
       date
     );
     return res.status(201).json(newTransaction);
   } catch (error) {
+    const { categoryId } = req.body;
+    if (
+      error.message ===
+      `Cast to ObjectId failed for value \"${categoryId}\" (type string) at path \"_id\" for model \"categorie\"`
+    )
+      return res.status(404).json({ message: "invalid categoryId" });
     return res.status(500).json({ message: error.message });
   }
 };
@@ -79,7 +84,12 @@ export const updateTransaction = async (req, res) => {
     const prevType = currentTransactionData.type;
     let balance = parseFloat(user.balance);
     const { comment, amount, categoryId, date } = req.body;
-    const categoryData = await Category.findOne({ _id: categoryId });
+    let categoryData;
+    categoryId
+      ? (categoryData = await Category.findOne({ _id: categoryId }))
+      : (categoryData = await Category.findOne({
+          _id: currentTransactionData.categoryId,
+        }));
     if (!categoryData)
       return res.status(400).json({ message: "invalid category id" });
     const category = categoryData.name;
@@ -146,7 +156,6 @@ export const deleteTransaction = async (req, res) => {
 export const getCategories = async (req, res) => {
   try {
     const categories = await TransactionService.getTransactionCategories();
-    console.log(categories);
     return res.status(200).json({ categories });
   } catch (error) {
     return res.status(500).json({ message: error.message });

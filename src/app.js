@@ -35,7 +35,7 @@ const specs = swaggerJsdoc(options);
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
-app.use("/", swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(logger(formatsLogger));
 app.use(cors());
