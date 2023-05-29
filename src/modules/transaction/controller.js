@@ -45,9 +45,7 @@ export const createNewTransaction = async (req, res) => {
       comment,
       amountParsed.toFixed(2),
       type,
-
       userId,
-      balanceAfter
       balanceAfter.toFixed(2),
       categoryName
     );
@@ -59,7 +57,6 @@ export const createNewTransaction = async (req, res) => {
 
 export const userTransactions = async (req, res) => {
   try {
-
     const userId = req.user._id;
     // const userId = testUser.userId;
     const userTransactions = await TransactionService.getUserTransactions(
