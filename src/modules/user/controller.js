@@ -44,6 +44,7 @@ export const login = async (req, res, next) => {
     const payload = {
       id: user.id,
       useremail: user.email,
+      name: user.name,
     };
     const token = jwt.sign(payload, secret, { expiresIn: "1h" });
     await userService.saveToken(user.id, token);
@@ -53,6 +54,7 @@ export const login = async (req, res, next) => {
       data: {
         token,
         user: {
+          name: user.name,
           email: user.email,
         },
       },
@@ -64,14 +66,16 @@ export const login = async (req, res, next) => {
 };
 
 export const signup = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
   const schema = Joi.object({
+    name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string()
       .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
       .required(),
   });
   const { error } = schema.validate({
+    name: name,
     email: email,
     password: password,
   });
@@ -88,17 +92,17 @@ export const signup = async (req, res, next) => {
     }
     const verificationToken = nanoid();
     const newUser = await userService.register(
+      name,
       email,
       password,
       verificationToken
     );
-    const { email: emailRegistered } = newUser;
+    const { email: emailRegistered, name: nameRegistered } = newUser;
     const msg = {
       to: emailRegistered,
-      // from: "contactsapp@op.pl",
-      from: "szymonogniewski00@gmail.com",
-      subject: "Please Verify Your Account",
-      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="http://localhost:3000/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
+      from: "no-reply-wallet@op.pl",
+      subject: "WalletApp - Please Verify Your Account",
+      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="https://wallet-dybb.onrender.com/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
     sgMail
       .send(msg)
@@ -120,6 +124,7 @@ export const signup = async (req, res, next) => {
       code: 201,
       data: {
         user: {
+          name: nameRegistered,
           email: emailRegistered,
         },
       },
@@ -150,6 +155,7 @@ export const current = async (req, res, next) => {
     code: 200,
     data: {
       user: {
+        name: req.user.name,
         email: req.user.email,
         balance: req.user.balance,
       },
