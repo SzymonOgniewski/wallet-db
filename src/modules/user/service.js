@@ -30,14 +30,12 @@ export const findUserByToken = (token) => {
   return User.findOne({ token });
 };
 
-
 export const saveToken = (id, token) => {
   return User.findOneAndUpdate({ _id: id }, { token: token });
 };
 
-
-export const register = (email, password, verificationToken) => {
-  const newUser = new User({ email, password, verificationToken });
+export const register = (name, email, password, verificationToken) => {
+  const newUser = new User({ name, email, password, verificationToken });
   newUser.setPassword(password);
   return newUser.save();
 };
