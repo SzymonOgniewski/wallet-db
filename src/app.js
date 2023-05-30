@@ -25,7 +25,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://wallet-dybb.onrender.com",
+        url: "https://wallet-dybb.onrender.com/api",
       },
     ],
   },
