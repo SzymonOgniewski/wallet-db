@@ -13,7 +13,7 @@ export const Transaction = model(
     type: {
       type: String,
       enum: ["INCOME", "EXPENSE"],
-      defaykt: "EXPENSE",
+      default: "EXPENSE",
     },
     amount: {
       type: Number,

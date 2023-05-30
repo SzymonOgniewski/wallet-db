@@ -131,6 +131,54 @@
  *         type:
  *           type: string
  *           description: Category type
+ *
+ *     TransactionSummary:
+ *       type: object
+ *       properties:
+ *         status:
+ *           type: string
+ *           description: request status error/success
+ *         code:
+ *           type: string
+ *           description: response code 200/400/401/500
+ *         data:
+ *           type: object
+ *           description: Transactions-summary data
+ *           properties:
+ *             response:
+ *               type: object
+ *               description: response object
+ *               properties:
+ *                 categoriesSummary:
+ *                   type: array
+ *                   description: Summary array for categories
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         description: Category name
+ *                       type:
+ *                         type: string
+ *                         description: Category type INCOME/EXPENSE
+ *                       total:
+ *                         type: number
+ *                         description: Summary for specific category
+ *                 incomeSummary:
+ *                   type: number
+ *                   description: Income summary
+ *                 expenseSummary:
+ *                   type: number
+ *                   description: Expense summary
+ *                 periodTotal:
+ *                   type: number
+ *                   description: Amount of transactions in specific period
+ *                 year:
+ *                   type: string
+ *                   description: Year of the summary
+ *                 month:
+ *                   type: string
+ *                   description: Month of the summary
  */
 /**
  * @swagger
@@ -243,6 +291,37 @@
  *         description: Unauthorized
  *       500:
  *         description: Internal server error
+ * /api/transactions/transactions-summary:
+ *   get:
+ *     summary: Get summary for specific period of time
+ *     tags: [Transactions]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The year of the desired period as number
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: integer
+ *         description: The month of the desired period as number
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TransactionSummary'
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
  * /api/users/sign-up:
  *   post:
  *     summary: Create a new account
@@ -303,7 +382,7 @@
  *     responses:
  *       200:
  *         description: current user data
- *         content: 
+ *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/CurrentUserData'
@@ -311,8 +390,6 @@
  *         description: Unauthorized
  *       500:
  *         description: Internal server error
-
-
  * components:
  *   securitySchemes:
  *     bearerAuth:
