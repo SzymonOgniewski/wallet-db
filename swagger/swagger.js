@@ -98,6 +98,19 @@
  *         password:
  *           type: string
  *           description: User's password
+ *         name:
+ *           type: string
+ *           description: User's first name
+ *
+ *     UserSignIn:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *           description: User's email
+ *         password:
+ *           type: string
+ *           description: User's password
  *
  *     UserWithToken:
  *       type: object
@@ -350,7 +363,7 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UserRegister'
+ *             $ref: '#/components/schemas/UserSignIn'
  *     responses:
  *       200:
  *         description: Signed in
@@ -392,7 +405,7 @@
  *         description: Internal server error
  * components:
  *   securitySchemes:
- *     bearerAuth:
+ *     BearerAuth:
  *       type: http
  *       scheme: bearer
  *       bearerFormat: JWT
