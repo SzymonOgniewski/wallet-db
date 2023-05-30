@@ -229,9 +229,9 @@ export const verify = async (req, res, next) => {
     await userService.findUserByEmailAndRenevToken(email, verificationToken);
     const msg = {
       to: email,
-      from: "contactsapp@op.pl",
+      from: "no-reply-wallet@op.pl",
       subject: "Please Verify Your Account",
-      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="http://localhost:3000/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
+      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href=""https://wallet-dybb.onrender.com/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
     sgMail
       .send(msg)
@@ -253,6 +253,100 @@ export const verify = async (req, res, next) => {
       code: 200,
       ResponseBody: {
         message: "Verification email sent",
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPassword = async (req, res, next) => {
+  const { email } = req.body;
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+  });
+  const { error } = schema.validate({
+    email: email,
+  });
+  if (error) return res.status(400).json(error.details[0].message);
+  try {
+    const user = await userService.findUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        code: 404,
+        message: "User not found",
+        data: "Conflict",
+      });
+    }
+
+    const resetToken = nanoid();
+    await userService.updateUserResetToken(user.id, resetToken);
+    const msg = {
+      to: email,
+      from: "no-reply-wallet@op.pl",
+      subject: "Password Reset",
+      html: `<p>Hello,</p><p>You have requested to reset your password. Please click on the following link to reset your password:</p><p><a href=""https://wallet-dybb.onrender.com/api/reset-password/${resetToken}">Reset Password</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
+    };
+
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log("Email sent");
+      })
+      .catch((error) => {
+        console.error(error);
+        return res.status(500).json({
+          status: "Internal Server Error",
+          code: 500,
+          ResponseBody: {
+            message: "Email sent Error",
+          },
+        });
+      });
+
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      ResponseBody: {
+        message: "Password reset email sent",
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  const schema = Joi.object({
+    token: Joi.string().required(),
+    password: Joi.string().min(6).required(),
+  });
+
+  try {
+    await schema.validateAsync(req.body);
+    const user = await userService.findUserByToken(token);
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        code: 400,
+        message: "Invalid or expired reset token",
+        data: "Conflict",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 6);
+
+    await userService.updateUserPassword(user.id, hashedPassword);
+    await userService.updateUserResetToken(user.id);
+
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      ResponseBody: {
+        message: "Password reset successful",
       },
     });
   } catch (error) {

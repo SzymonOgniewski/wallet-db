@@ -39,3 +39,9 @@ export const register = (name, email, password, verificationToken) => {
   newUser.setPassword(password);
   return newUser.save();
 };
+export const updateUserResetToken = (id, token = null) => {
+  return User.findOneAndUpdate({ _id: id }, { token: token });
+};
+export const updateUserPassword = (id, password) => {
+  return User.findOneAndUpdate({ _id: id }, { password: password });
+};
