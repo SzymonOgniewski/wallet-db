@@ -98,7 +98,7 @@ export const signup = async (req, res, next) => {
       // from: "contactsapp@op.pl",
       from: "szymonogniewski00@gmail.com",
       subject: "Please Verify Your Account",
-      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="http://localhost:3000/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
+      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="https://wallet-dybb.onrender.com/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
     sgMail
       .send(msg)
