@@ -47,7 +47,8 @@ export const login = async (req, res, next) => {
       name: user.name,
     };
     const token = jwt.sign(payload, secret, { expiresIn: "1h" });
-    await userService.saveToken(user.id, token);
+    const refreshToken = nanoid();
+    await userService.saveToken(user.id, token, refreshToken);
     res.json({
       status: "success",
       code: 200,
@@ -351,5 +352,35 @@ export const resetPassword = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+export const findUserRefreshToken = async (userId) => {
+  try {
+    const user = await userService.findUserByID({ _id: userId });
+    if (user) {
+      const refreshToken = user.refreshToken;
+      return refreshToken;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error while reading user refreshToken:", error);
+    throw error;
+  }
+};
+export const saveRefreshToken = async (userId, refreshToken) => {
+  try {
+    const user = await userService.saveRefreshToken({
+      _id: userId,
+      refreshToken,
+    });
+    if (user) {
+      return true;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error while reading user saverefreshToken:", error);
+    throw error;
   }
 };
