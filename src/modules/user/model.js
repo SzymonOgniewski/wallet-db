@@ -18,24 +18,21 @@ const userSchema = new Schema({
     type: Number,
     default: 0,
   },
-
-  token: {
-    type: String,
-    default: null,
-  },
   verify: {
     type: Boolean,
     default: false,
   },
+  validationToken: {
+    type: String,
+    default: null,
+  },
   verificationToken: {
     type: String,
-    required: function () {
-      return (
-        typeof this.verificationToken === "undefined " ||
-        (this.verificationToken !== null &&
-          typeof this.verificationToken !== "string")
-      );
-    },
+    default: null,
+  },
+  refreshToken: {
+    type: String,
+    default: null,
   },
 });
 userSchema.methods.setPassword = function (password) {
