@@ -142,11 +142,18 @@ export const updateTransaction = async (req, res) => {
 
 export const deleteTransaction = async (req, res) => {
   try {
+    const user = req.user;
     const transactionId = req.params.transactionId;
+    const transaction = await Transaction.findOne({ _id: transactionId });
+    if (!transaction) return res.sendStatus(404);
     const removedTransaction = await TransactionService.deleteTransaction(
       transactionId
     );
     if (!removedTransaction) return res.sendStatus(404);
+    transaction.type === "INCOME"
+      ? (user.balance -= Number(transaction.amount))
+      : (user.balance += Number(transaction.amount));
+    await user.save();
     return res.json(removedTransaction);
   } catch (error) {
     return res.status(500).json({ message: error.message });

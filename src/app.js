@@ -25,7 +25,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://wallet-dybb.onrender.com",
+        url: "localhost:3000",
       },
     ],
   },

@@ -246,6 +246,11 @@
  *     tags: [Transactions]
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - name: transactionId
+ *         in: path
+ *         description: Id of the transaction to update
+ *         required: true
  *     requestBody:
  *       required: true
  *       content:
@@ -270,6 +275,11 @@
  *     tags: [Transactions]
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - name: transactionId
+ *         in: path
+ *         description: Id of the transaction to update
+ *         required: true
  *     responses:
  *       200:
  *         description: Deleted
@@ -304,7 +314,7 @@
  *         description: Unauthorized
  *       500:
  *         description: Internal server error
- * /api/transactions/transactions-summary:
+ * /api/transactions-summary:
  *   get:
  *     summary: Get summary for specific period of time
  *     tags: [Transactions]
