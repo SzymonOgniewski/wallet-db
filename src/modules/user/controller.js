@@ -103,7 +103,7 @@ export const signup = async (req, res, next) => {
       to: emailRegistered,
       from: "walletapphelper@gmail.com",
       subject: "WalletApp - Please Verify Your Account",
-      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="http://localhost:3000/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
+      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="https://wallet-febk.onrender.com/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
     sgMail
       .send(msg)
@@ -232,7 +232,7 @@ export const verify = async (req, res, next) => {
       to: email,
       from: "walletapphelper@gmail.com",
       subject: "Please Verify Your Account",
-      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="http://localhost:3000/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
+      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="https://wallet-febk.onrender.com/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
     sgMail
       .send(msg)
@@ -287,7 +287,7 @@ export const forgotPassword = async (req, res, next) => {
       to: email,
       from: "walletapphelper@gmail.com",
       subject: "Password Reset",
-      html: `<p>Hello,</p><p>You have requested to reset your password. Please click on the following link to reset your password:</p><p><a href="http://localhost:3000/api/reset-password/${resetToken}">Reset Password</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
+      html: `<p>Hello,</p><p>You have requested to reset your password. Please click on the following link to reset your password:</p><p><a href="https://wallet-febk.onrender.com/api/reset-password/${resetToken}">Reset Password</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
 
     sgMail
