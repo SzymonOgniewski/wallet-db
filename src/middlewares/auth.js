@@ -58,7 +58,6 @@ const generateAuthToken = (user) => {
 export const auth = async (req, res, next) => {
   passport.authenticate("jwt", { session: false }, async (err, user) => {
     const reqToken = req.headers["authorization"]?.slice(7);
-    console.log(reqToken, user);
     if (!user || err || user.validationToken !== reqToken) {
       return res.status(401).json({
         status: "error",
