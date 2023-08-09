@@ -150,7 +150,6 @@ export const logout = async (req, res, next) => {
 };
 
 export const current = async (req, res, next) => {
-  console.log(req.user);
   return res.json({
     status: "success",
     code: 200,

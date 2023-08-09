@@ -3,7 +3,6 @@ import Joi from "joi";
 export const transactionsSummaryController = async (req, res, next) => {
   const { year, month } = req.query;
   const id = req.user._id;
-  console.log(id);
   const schema = Joi.object({
     year: Joi.string().required(),
     month: Joi.string().required(),

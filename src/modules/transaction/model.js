@@ -6,7 +6,7 @@ export const Transaction = model(
     comment: {
       type: String,
     },
-    transactionDate: {
+    date: {
       type: Date,
       default: new Date(),
     },

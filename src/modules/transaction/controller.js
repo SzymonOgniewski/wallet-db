@@ -27,9 +27,7 @@ export const createNewTransaction = async (req, res) => {
     }
     let type = "EXPENSE";
     const category = await Category.findOne({ _id: categoryId });
-    console.log(categoryId);
     if (category) type = category.type;
-    console.log(categoryId);
     let userBalance = user.balance;
     let balanceAfter;
     let amountParsed = parseFloat(amount);
@@ -46,7 +44,16 @@ export const createNewTransaction = async (req, res) => {
       user.id,
       balanceAfter.toFixed(2),
       categoryId,
-      date
+      date.toString()
+    );
+    console.log(
+      comment,
+      amountParsed.toFixed(2),
+      type,
+      user.id,
+      balanceAfter.toFixed(2),
+      categoryId,
+      date.toString()
     );
     return res.status(201).json(newTransaction);
   } catch (error) {
