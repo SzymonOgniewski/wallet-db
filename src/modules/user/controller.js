@@ -101,11 +101,12 @@ export const signup = async (req, res, next) => {
       verificationToken
     );
     const { email: emailRegistered, name: nameRegistered } = newUser;
+    const verificationLink = `https://szymonogniewski.github.io/wallet-team-project/verification-success/${verificationToken}`;
     const msg = {
-      to: emailRegistered,
+      to: email,
       from: "walletapphelper@gmail.com",
-      subject: "WalletApp - Please Verify Your Account",
-      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="https://wallet-febk.onrender.com/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
+      subject: "Please Verify Your Account",
+      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="${verificationLink}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
     sgMail
       .send(msg)
@@ -123,7 +124,6 @@ export const signup = async (req, res, next) => {
         });
       })
       .catch((error) => {
-        console.error(error);
         return res.status(500).json({
           status: "Internal Server Error",
           code: 500,
@@ -229,11 +229,13 @@ export const verify = async (req, res, next) => {
     }
     const verificationToken = nanoid();
     await userService.findUserByEmailAndRenevToken(email, verificationToken);
+
+    const verificationLink = `https://szymonogniewski.github.io/wallet-team-project/verification-success/${verificationToken}`;
     const msg = {
       to: email,
       from: "walletapphelper@gmail.com",
       subject: "Please Verify Your Account",
-      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="https://wallet-febk.onrender.com/api/users/verify/${verificationToken}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
+      html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="${verificationLink}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
     sgMail
       .send(msg)
