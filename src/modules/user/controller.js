@@ -69,7 +69,7 @@ export const login = async (req, res, next) => {
 export const signup = async (req, res, next) => {
   const { email, password, name } = req.body;
   const pattern =
-    "/(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[$@$!#.])[A-Za-zd$@$!%*?&.]{8,20}/";
+    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#@$!%&*?])[A-Za-z\\d#@$!%&*?]{8,30}$";
 
   const schema = Joi.object({
     name: Joi.string().required(),
@@ -81,6 +81,7 @@ export const signup = async (req, res, next) => {
     email: email,
     password: password,
   });
+
   if (error) return res.status(400).json(error.details[0].message);
   try {
     const user = await userService.findUserByEmail(email);
@@ -110,10 +111,20 @@ export const signup = async (req, res, next) => {
       .send(msg)
       .then(() => {
         console.log("Email sent");
+        res.status(201).json({
+          status: "success",
+          code: 201,
+          data: {
+            user: {
+              name: nameRegistered,
+              email: emailRegistered,
+            },
+          },
+        });
       })
       .catch((error) => {
         console.error(error);
-        return res.json({
+        return res.status(500).json({
           status: "Internal Server Error",
           code: 500,
           ResponseBody: {
@@ -121,16 +132,6 @@ export const signup = async (req, res, next) => {
           },
         });
       });
-    res.status(201).json({
-      status: "success",
-      code: 201,
-      data: {
-        user: {
-          name: nameRegistered,
-          email: emailRegistered,
-        },
-      },
-    });
   } catch (error) {
     next(error);
   }
