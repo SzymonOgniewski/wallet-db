@@ -68,12 +68,13 @@ export const login = async (req, res, next) => {
 
 export const signup = async (req, res, next) => {
   const { email, password, name } = req.body;
+  const pattern =
+    "/(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[$@$!#.])[A-Za-zd$@$!%*?&.]{8,20}/";
+
   const schema = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
-    password: Joi.string()
-      .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
-      .required(),
+    password: Joi.string().pattern(new RegExp(pattern)).required(),
   });
   const { error } = schema.validate({
     name: name,
