@@ -35,7 +35,7 @@ const specs = swaggerJsdoc(options);
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 const corsOptions = {
-  origin: "http://localhost:3001",
+  origin: "https://wallet-febk.onrender.com",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
