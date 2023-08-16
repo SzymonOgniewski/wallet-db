@@ -34,16 +34,11 @@ const options = {
 const specs = swaggerJsdoc(options);
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-const corsOptions = {
-  origin: "http://localhost:3001",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-  optionsSuccessStatus: 204,
-};
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(logger(formatsLogger));
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), "src", "public")));
 
