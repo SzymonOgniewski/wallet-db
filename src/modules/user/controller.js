@@ -9,14 +9,14 @@ dotenv.config();
 
 sgMail.setApiKey(process.env.SEND_GRID_PASSWORD);
 const secret = process.env.SECRET;
+const pattern =
+  "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#@$!%&*?])[A-Za-z\\d#@$!%&*?]{8,30}$";
 
 export const login = async (req, res, next) => {
   const { email, password } = req.body;
   const schema = Joi.object({
     email: Joi.string().email().required(),
-    password: Joi.string()
-      .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
-      .required(),
+    password: Joi.string().pattern(new RegExp(pattern)).required(),
   });
   const { error } = schema.validate({
     email: email,
@@ -68,9 +68,6 @@ export const login = async (req, res, next) => {
 
 export const signup = async (req, res, next) => {
   const { email, password, name } = req.body;
-  const pattern =
-    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#@$!%&*?])[A-Za-z\\d#@$!%&*?]{8,30}$";
-
   const schema = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
@@ -108,7 +105,6 @@ export const signup = async (req, res, next) => {
       subject: "Please Verify Your Account",
       html: `<p>Hello,</p><p>Thank you for signing up! Please click on the following link to verify your account:</p><p><a href="${verificationLink}">Verify</a></p><p>Best regards,</p><p>Contacts APP Team</p>`,
     };
-    console.log(email);
     sgMail
       .send(msg)
       .then(() => {
