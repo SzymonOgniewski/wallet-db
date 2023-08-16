@@ -69,7 +69,7 @@ export const login = async (req, res, next) => {
 export const signup = async (req, res, next) => {
   const { email, password, name } = req.body;
   const schema = Joi.object({
-    name: Joi.string().required(),
+    name: Joi.string().required().min(1).max(15),
     email: Joi.string().email().required(),
     password: Joi.string().pattern(new RegExp(pattern)).required(),
   });
