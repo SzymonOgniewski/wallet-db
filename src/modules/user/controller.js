@@ -9,14 +9,14 @@ dotenv.config();
 
 sgMail.setApiKey(process.env.SEND_GRID_PASSWORD);
 const secret = process.env.SECRET;
+const pattern =
+  "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#@$!%&*?])[A-Za-z\\d#@$!%&*?]{8,30}$";
 
 export const login = async (req, res, next) => {
   const { email, password } = req.body;
   const schema = Joi.object({
     email: Joi.string().email().required(),
-    password: Joi.string()
-      .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
-      .required(),
+    password: Joi.string().pattern(new RegExp(pattern)).required(),
   });
   const { error } = schema.validate({
     email: email,
@@ -68,11 +68,8 @@ export const login = async (req, res, next) => {
 
 export const signup = async (req, res, next) => {
   const { email, password, name } = req.body;
-  const pattern =
-    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#@$!%&*?])[A-Za-z\\d#@$!%&*?]{8,30}$";
-
   const schema = Joi.object({
-    name: Joi.string().required(),
+    name: Joi.string().required().min(1).max(15),
     email: Joi.string().email().required(),
     password: Joi.string().pattern(new RegExp(pattern)).required(),
   });
