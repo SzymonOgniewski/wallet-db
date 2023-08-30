@@ -19,7 +19,7 @@ export const transactionsSummaryController = async (req, res, next) => {
       year,
       month
     );
-
+    console.log("result", result);
     let incomeSummary = 0;
     let expenseSummary = 0;
 
@@ -42,6 +42,7 @@ export const transactionsSummaryController = async (req, res, next) => {
       year: year,
       month: month,
     };
+    console.log("response", response);
     res.json({
       status: "success",
       code: 200,
