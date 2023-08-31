@@ -3,10 +3,11 @@ import { Transaction } from "../transaction/model.js";
 export const monthlySummaryForUser = (userId, year, month) => {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0, 23, 59, 59);
+
   return Transaction.aggregate([
     {
       $match: {
-        transactionDate: { $gte: startDate, $lte: endDate },
+        date: { $gte: startDate, $lte: endDate },
         userId: userId.toString(),
       },
     },
